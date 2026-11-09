@@ -24,11 +24,6 @@ before publishing it to any database.
 - No lookup rows are seeded by this project. Load reference data through a
   controlled process before loading operational records.
 
-`schema.sql` in the repository root is an unexecuted historical Access export.
-It is retained for reference only and is not included in the database project.
-In particular, its Access `MSys*` navigation-object references are not part of
-this SQL Server schema.
-
 ## Validation
 
 `tests/SchemaIntegrityTests.sql` is a transaction-rolled-back test script for a
