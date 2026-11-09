@@ -19,6 +19,10 @@ CREATE TABLE [dbo].[OdfwMonitoringTargetCatch]
 );
 GO
 CREATE INDEX [IX_OdfwMonitoringTargetCatch_SurveyId] ON [dbo].[OdfwMonitoringTargetCatch] ([OdfwMonitoringSurveyId]);
+GO
 CREATE INDEX [IX_OdfwMonitoringTargetCatch_SpeciesId] ON [dbo].[OdfwMonitoringTargetCatch] ([SpeciesId]);
+GO
 CREATE INDEX [IX_OdfwMonitoringTargetCatch_ExternalTagTypeId] ON [dbo].[OdfwMonitoringTargetCatch] ([ExternalTagTypeId]);
+GO
 CREATE INDEX [IX_OdfwMonitoringTargetCatch_TagColorId] ON [dbo].[OdfwMonitoringTargetCatch] ([TagColorId]);
+GO

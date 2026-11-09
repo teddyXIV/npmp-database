@@ -18,7 +18,12 @@ CREATE TABLE [dbo].[WdfwSrfBiologicalObservation]
 );
 GO
 CREATE INDEX [IX_WdfwSrfBiologicalObservation_SpeciesId] ON [dbo].[WdfwSrfBiologicalObservation] ([SpeciesId]);
+GO
 CREATE INDEX [IX_WdfwSrfBiologicalObservation_ExternalTagTypeId] ON [dbo].[WdfwSrfBiologicalObservation] ([ExternalTagTypeId]);
+GO
 CREATE INDEX [IX_WdfwSrfBiologicalObservation_TagColorId] ON [dbo].[WdfwSrfBiologicalObservation] ([TagColorId]);
+GO
 CREATE INDEX [IX_WdfwSrfBiologicalObservation_SexId] ON [dbo].[WdfwSrfBiologicalObservation] ([SexId]);
+GO
 CREATE INDEX [IX_WdfwSrfBiologicalObservation_WdfwSrfTripId] ON [dbo].[WdfwSrfBiologicalObservation] ([WdfwSrfTripId]);
+GO

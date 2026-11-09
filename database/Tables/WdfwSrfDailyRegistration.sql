@@ -8,4 +8,6 @@ CREATE TABLE [dbo].[WdfwSrfDailyRegistration]
 );
 GO
 CREATE INDEX [IX_WdfwSrfDailyRegistration_StationId] ON [dbo].[WdfwSrfDailyRegistration] ([StationId]);
+GO
 CREATE INDEX [IX_WdfwSrfDailyRegistration_RegistrationDate] ON [dbo].[WdfwSrfDailyRegistration] ([RegistrationDate]);
+GO

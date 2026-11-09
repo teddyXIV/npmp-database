@@ -10,4 +10,6 @@ CREATE TABLE [dbo].[WdfwDaReport]
 );
 GO
 CREATE INDEX [IX_WdfwDaReport_WdfwDaLocationId] ON [dbo].[WdfwDaReport] ([WdfwDaLocationId]);
+GO
 CREATE UNIQUE INDEX [UQ_WdfwDaReport_Location_WeekEndingDate] ON [dbo].[WdfwDaReport] ([WdfwDaLocationId], [WeekEndingDate]);
+GO

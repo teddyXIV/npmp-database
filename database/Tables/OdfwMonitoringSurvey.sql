@@ -13,4 +13,6 @@ CREATE TABLE [dbo].[OdfwMonitoringSurvey]
 );
 GO
 CREATE INDEX [IX_OdfwMonitoringSurvey_ReservoirId] ON [dbo].[OdfwMonitoringSurvey] ([ReservoirId]);
+GO
 CREATE INDEX [IX_OdfwMonitoringSurvey_SurveyDate] ON [dbo].[OdfwMonitoringSurvey] ([SurveyDate]);
+GO
