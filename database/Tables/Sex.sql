@@ -1,0 +1,9 @@
+CREATE TABLE [dbo].[Sex]
+(
+    [SexId] INT IDENTITY(1,1) NOT NULL,
+    [SexCode] NVARCHAR(20) NOT NULL,
+    [SexName] NVARCHAR(100) NOT NULL,
+    CONSTRAINT [PK_Sex] PRIMARY KEY CLUSTERED ([SexId]),
+    CONSTRAINT [UQ_Sex_SexCode] UNIQUE ([SexCode]),
+    CONSTRAINT [UQ_Sex_SexName] UNIQUE ([SexName])
+);

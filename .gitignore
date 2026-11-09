@@ -1,0 +1,18 @@
+# Temporary AI agent working files
+.agent-workspace/
+
+# Local environment files
+.env
+.env.local
+
+# Python
+__pycache__/
+.venv/
+
+# SQL Database Project build output
+bin/
+obj/
+*.dacpac
+
+# Temporary AI agent working files
+.agent-workspace/
