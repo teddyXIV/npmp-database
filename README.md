@@ -2,17 +2,17 @@
 
 This repository contains the SQL Server schema for the Northern Pikeminnow
 Management Program database. The SDK-style SQL Database Project in
-`database/npmp-database.sqlproj` is the authoritative schema source.
+`database/NpmpDatabase/NpmpDatabase.sqlproj` is the authoritative schema source.
 
 ## Build
 
 Build the project from the repository root:
 
 ```powershell
-dotnet build .\database\npmp-database.sqlproj
+dotnet build .\database\NpmpDatabase\NpmpDatabase.sqlproj
 ```
 
-The build creates a DACPAC under `database/bin/`. Review the deployment script
+The build creates a DACPAC under `database/NpmpDatabase/bin/`. Review the deployment script
 before publishing it to any database.
 
 ## Schema conventions
