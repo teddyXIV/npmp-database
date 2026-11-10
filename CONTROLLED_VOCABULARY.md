@@ -17,7 +17,7 @@ separate, controlled approval.
 | Term | Definition | Schema use | Notes |
 | --- | --- | --- | --- |
 | Controlled vocabulary | A governed set of terms and, where later approved, the allowable values used to represent a domain consistently. | All lookup domains | This first iteration defines terms only; it does not supply approved value lists. |
-| Lookup domain | A reusable category whose values are stored once and referenced by operational records. | `Species`, `Sex`, `State`, `Reach`, `Reservoir`, `Station`, `TagType`, `TagColor` | Each domain has its own identity key and code or name fields as applicable. |
+| Lookup domain | A reusable category whose values are stored once and referenced by operational records. | `Species`, `Sex`, `State`, `Reach`, `Reservoir`, `Station`, `FishedLocation`, `TagType`, `TagColor` | Each domain has its own identity key and code or name fields as applicable. |
 | Surrogate identifier | A database-generated integer that uniquely identifies one stored row. | All tables' `...Id` primary keys | It is a technical key, not a business code or field identifier. |
 | Code | A concise, unique representation of a controlled value. | `ReachCode`, `ReservoirCode`, `StateCode`, `SexCode`, `TagTypeCode`, `TagColorCode` | The format and approved values are intentionally not defined here. |
 | Name | The human-readable label of a controlled value or location. | `...Name`, `CommonName`, `ScientificName` | A name is not interchangeable with its surrogate identifier. |
@@ -50,6 +50,9 @@ records its state and may record its city.
 | Reservoir | A program-defined water body or reservoir within a reach. | `Reservoir`; `Station.ReservoirId`; `OdfwMonitoringSurvey.ReservoirId` |
 | Station | A named program sampling or registration location within a reservoir. | `Station`; `WdfwSrfDailyRegistration.StationId` |
 | City | The optional city associated with a station. | `Station.City` |
+| Latitude | The station's geographic north-south coordinate. | `Station.Latitude` | Decimal degrees from -90 through 90. |
+| Longitude | The station's geographic east-west coordinate. | `Station.Longitude` | Decimal degrees from -180 through 180. |
+| Fished location | A controlled location value identifying where an SRF trip was fished. | `FishedLocation`; `WdfwSrfTrip.FishedLocationId` | Identified by a unique code and a description. |
 
 ## ODFW monitoring
 
@@ -71,8 +74,9 @@ records its state and may record its city.
 | Sport Reward Fishery (SRF) | The WDFW program represented by the `WdfwSrf` records. | `WdfwSrfDailyRegistration`, `WdfwSrfTrip`, `WdfwSrfCatch`, `WdfwSrfBiologicalObservation` | `SRF` is the accepted abbreviation. |
 | Daily registration | A dated SRF registration at a station. | `WdfwSrfDailyRegistration` | Parent record for one or more trips. |
 | Registration date | The calendar date of an SRF daily registration. | `WdfwSrfDailyRegistration.RegistrationDate` | Date. |
-| Trip | An SRF activity record associated with one daily registration. | `WdfwSrfTrip` | Parent record for catch and biological observations. |
+| Trip | An SRF activity record associated with one daily registration and, when recorded, a fished location. | `WdfwSrfTrip` | Parent record for catch and biological observations. |
 | Catch | Aggregate SRF catch for one species during one trip. | `WdfwSrfCatch` | One record per trip and species. |
 | Biological observation | An individual fish observation made during an SRF trip. | `WdfwSrfBiologicalObservation` | May include species, fork length, tags, tag attributes, and sex. |
 | Caught count | The total number of fish caught in an SRF trip for one species. | `WdfwSrfCatch.CaughtCount` | Nonnegative whole number. |
 | Released count | The number of fish released from the corresponding SRF trip and species catch. | `WdfwSrfCatch.ReleasedCount` | Nonnegative whole number and not greater than caught count. |
+| SRF qualifying count | The number of fish caught in an SRF trip and species catch that qualify for sport-reward payment because they meet the applicable species and size criteria. | `WdfwSrfCatch.SrfQualifyingCount` | Optional nonnegative whole number; when recorded, it cannot exceed caught count. |

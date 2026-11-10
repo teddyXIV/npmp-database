@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build">
   <Sdk Name="Microsoft.Build.Sql" Version="2.2.0" />
   <PropertyGroup>
-    <Name>database</Name>
+    <Name>NpmpDatabase</Name>
     <ProjectGuid>{B0C82E9A-ACFA-4C57-9E1E-9C67BF935E10}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>

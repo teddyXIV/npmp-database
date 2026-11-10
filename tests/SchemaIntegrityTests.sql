@@ -14,6 +14,7 @@ BEGIN TRY
     DECLARE @SurveyId INT;
     DECLARE @StateId INT;
     DECLARE @StationId INT;
+    DECLARE @FishedLocationId INT;
     DECLARE @DailyRegistrationId INT;
     DECLARE @TripId INT;
 
@@ -38,9 +39,13 @@ BEGIN TRY
     VALUES ('TS', N'Constraint Test State');
     SET @StateId = CONVERT(INT, SCOPE_IDENTITY());
 
-    INSERT INTO [dbo].[Station] ([StationName], [ReservoirId], [StateId])
-    VALUES (N'Constraint Test Station', @ReservoirId, @StateId);
+    INSERT INTO [dbo].[Station] ([StationName], [ReservoirId], [StateId], [Latitude], [Longitude])
+    VALUES (N'Constraint Test Station', @ReservoirId, @StateId, 45.000000, -122.000000);
     SET @StationId = CONVERT(INT, SCOPE_IDENTITY());
+
+    INSERT INTO [dbo].[FishedLocation] ([Code], [Description])
+    VALUES (N'TEST-LOC', N'Constraint Test Fished Location');
+    SET @FishedLocationId = CONVERT(INT, SCOPE_IDENTITY());
 
     /* Foreign-key enforcement. */
     BEGIN TRY
@@ -89,15 +94,34 @@ BEGIN TRY
     VALUES ('2026-01-01', @StationId);
     SET @DailyRegistrationId = CONVERT(INT, SCOPE_IDENTITY());
 
-    INSERT INTO [dbo].[WdfwSrfTrip] ([WdfwSrfDailyRegistrationId])
-    VALUES (@DailyRegistrationId);
+    BEGIN TRY
+        INSERT INTO [dbo].[WdfwSrfTrip] ([WdfwSrfDailyRegistrationId], [FishedLocationId])
+        VALUES (@DailyRegistrationId, -1);
+        THROW 51004, 'Expected fished-location foreign-key violation was not raised.', 1;
+    END TRY
+    BEGIN CATCH
+        IF ERROR_NUMBER() <> 547 THROW;
+    END CATCH;
+
+    INSERT INTO [dbo].[WdfwSrfTrip] ([WdfwSrfDailyRegistrationId], [FishedLocationId])
+    VALUES (@DailyRegistrationId, @FishedLocationId);
     SET @TripId = CONVERT(INT, SCOPE_IDENTITY());
 
     BEGIN TRY
         INSERT INTO [dbo].[WdfwSrfCatch]
             ([SpeciesId], [CaughtCount], [ReleasedCount], [WdfwSrfTripId])
         VALUES (@SpeciesId, 1, 2, @TripId);
-        THROW 51004, 'Expected released-count CHECK violation was not raised.', 1;
+        THROW 51005, 'Expected released-count CHECK violation was not raised.', 1;
+    END TRY
+    BEGIN CATCH
+        IF ERROR_NUMBER() <> 547 THROW;
+    END CATCH;
+
+    BEGIN TRY
+        INSERT INTO [dbo].[WdfwSrfCatch]
+            ([SpeciesId], [CaughtCount], [ReleasedCount], [SrfQualifyingCount], [WdfwSrfTripId])
+        VALUES (@SpeciesId, 1, 0, 2, @TripId);
+        THROW 51006, 'Expected qualifying-count CHECK violation was not raised.', 1;
     END TRY
     BEGIN CATCH
         IF ERROR_NUMBER() <> 547 THROW;
