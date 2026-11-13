@@ -21,6 +21,9 @@ before publishing it to any database.
 - Shared species, location, tagging, and sex values are maintained in lookup
   tables; operational records reference them with foreign keys.
 - Fork lengths are stored in millimeters and weights in grams.
+- Every table records database-managed `CreatedAt` and `UpdatedAt` audit
+  timestamps as UTC `DATETIME2(7)` values. Applications should convert them
+  to the appropriate local time zone only when presenting them to users.
 - No lookup rows are seeded by this project. Load reference data through a
   controlled process before loading operational records.
 

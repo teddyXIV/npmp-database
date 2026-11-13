@@ -1,6 +1,8 @@
 CREATE TABLE [dbo].[OdfwMonitoringTargetCatch]
 (
     [OdfwMonitoringTargetCatchId] INT IDENTITY(1,1) NOT NULL,
+    [CreatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_OdfwMonitoringTargetCatch_CreatedAt] DEFAULT (SYSUTCDATETIME()),
+    [UpdatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_OdfwMonitoringTargetCatch_UpdatedAt] DEFAULT (SYSUTCDATETIME()),
     [OdfwMonitoringSurveyId] INT NOT NULL,
     [SpeciesId] INT NOT NULL,
     [ForkLengthMillimeters] INT NULL,
@@ -26,3 +28,16 @@ CREATE INDEX [IX_OdfwMonitoringTargetCatch_ExternalTagTypeId] ON [dbo].[OdfwMoni
 GO
 CREATE INDEX [IX_OdfwMonitoringTargetCatch_TagColorId] ON [dbo].[OdfwMonitoringTargetCatch] ([TagColorId]);
 GO
+CREATE TRIGGER [dbo].[TR_OdfwMonitoringTargetCatch_SetUpdatedAt]
+ON [dbo].[OdfwMonitoringTargetCatch]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRIGGER_NESTLEVEL() > 1 RETURN;
+
+    UPDATE [dbo].[OdfwMonitoringTargetCatch]
+    SET [UpdatedAt] = SYSUTCDATETIME()
+    FROM [dbo].[OdfwMonitoringTargetCatch] AS [Target]
+    INNER JOIN [inserted] AS [Source] ON [Source].[OdfwMonitoringTargetCatchId] = [Target].[OdfwMonitoringTargetCatchId];
+END;

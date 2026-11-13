@@ -1,6 +1,8 @@
 CREATE TABLE [dbo].[WdfwSrfCatch]
 (
     [WdfwSrfCatchId] INT IDENTITY(1,1) NOT NULL,
+    [CreatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_WdfwSrfCatch_CreatedAt] DEFAULT (SYSUTCDATETIME()),
+    [UpdatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_WdfwSrfCatch_UpdatedAt] DEFAULT (SYSUTCDATETIME()),
     [SpeciesId] INT NOT NULL,
     [CaughtCount] INT NOT NULL,
     [ReleasedCount] INT NOT NULL,
@@ -17,3 +19,17 @@ CREATE TABLE [dbo].[WdfwSrfCatch]
 );
 GO
 CREATE INDEX [IX_WdfwSrfCatch_SpeciesId] ON [dbo].[WdfwSrfCatch] ([SpeciesId]);
+GO
+CREATE TRIGGER [dbo].[TR_WdfwSrfCatch_SetUpdatedAt]
+ON [dbo].[WdfwSrfCatch]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRIGGER_NESTLEVEL() > 1 RETURN;
+
+    UPDATE [dbo].[WdfwSrfCatch]
+    SET [UpdatedAt] = SYSUTCDATETIME()
+    FROM [dbo].[WdfwSrfCatch] AS [Target]
+    INNER JOIN [inserted] AS [Source] ON [Source].[WdfwSrfCatchId] = [Target].[WdfwSrfCatchId];
+END;

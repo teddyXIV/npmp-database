@@ -1,6 +1,8 @@
 CREATE TABLE [dbo].[Station]
 (
     [StationId] INT IDENTITY(1,1) NOT NULL,
+    [CreatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_Station_CreatedAt] DEFAULT (SYSUTCDATETIME()),
+    [UpdatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_Station_UpdatedAt] DEFAULT (SYSUTCDATETIME()),
     [StationName] NVARCHAR(255) NOT NULL,
     [ReservoirId] INT NOT NULL,
     [City] NVARCHAR(255) NULL,
@@ -16,3 +18,17 @@ CREATE TABLE [dbo].[Station]
 );
 GO
 CREATE INDEX [IX_Station_StateId] ON [dbo].[Station] ([StateId]);
+GO
+CREATE TRIGGER [dbo].[TR_Station_SetUpdatedAt]
+ON [dbo].[Station]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRIGGER_NESTLEVEL() > 1 RETURN;
+
+    UPDATE [dbo].[Station]
+    SET [UpdatedAt] = SYSUTCDATETIME()
+    FROM [dbo].[Station] AS [Target]
+    INNER JOIN [inserted] AS [Source] ON [Source].[StationId] = [Target].[StationId];
+END;

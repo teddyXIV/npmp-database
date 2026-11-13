@@ -17,6 +17,31 @@ BEGIN TRY
     DECLARE @FishedLocationId INT;
     DECLARE @DailyRegistrationId INT;
     DECLARE @TripId INT;
+    DECLARE @CreatedAt DATETIME2(7);
+    DECLARE @InitialUpdatedAt DATETIME2(7);
+    DECLARE @UpdatedAt DATETIME2(7);
+    DECLARE @AuditColumnCount INT;
+
+    /* All active tables require UTC audit timestamps with defaults. */
+    SELECT @AuditColumnCount = COUNT(*)
+    FROM [sys].[tables] AS [Table]
+    INNER JOIN [sys].[schemas] AS [Schema] ON [Schema].[schema_id] = [Table].[schema_id]
+    INNER JOIN [sys].[columns] AS [Column] ON [Column].[object_id] = [Table].[object_id]
+    WHERE [Schema].[name] = N'dbo'
+      AND [Table].[name] IN
+      (
+          N'FishedLocation', N'OdfwMonitoringIncidentalCatch', N'OdfwMonitoringSurvey',
+          N'OdfwMonitoringTargetCatch', N'Reach', N'Reservoir', N'Sex', N'Species',
+          N'State', N'Station', N'TagColor', N'TagType', N'WdfwSrfBiologicalObservation',
+          N'WdfwSrfCatch', N'WdfwSrfDailyRegistration', N'WdfwSrfTrip'
+      )
+      AND [Column].[name] IN (N'CreatedAt', N'UpdatedAt')
+      AND [Column].[system_type_id] = TYPE_ID(N'datetime2')
+      AND [Column].[is_nullable] = 0
+      AND [Column].[default_object_id] <> 0;
+
+    IF @AuditColumnCount <> 32
+        THROW 51007, 'Expected non-null datetime2 audit columns with defaults on all active tables.', 1;
 
     INSERT INTO [dbo].[Species] ([CommonName], [ScientificName])
     VALUES (N'Constraint Test Species', N'Testus constraintus');
@@ -46,6 +71,31 @@ BEGIN TRY
     INSERT INTO [dbo].[FishedLocation] ([Code], [Description])
     VALUES (N'TEST-LOC', N'Constraint Test Fished Location');
     SET @FishedLocationId = CONVERT(INT, SCOPE_IDENTITY());
+
+    SELECT
+        @CreatedAt = [CreatedAt],
+        @InitialUpdatedAt = [UpdatedAt]
+    FROM [dbo].[FishedLocation]
+    WHERE [FishedLocationId] = @FishedLocationId;
+
+    IF @CreatedAt IS NULL OR @InitialUpdatedAt IS NULL
+        THROW 51008, 'Expected audit timestamp defaults were not populated.', 1;
+
+    WAITFOR DELAY '00:00:00.100';
+
+    UPDATE [dbo].[FishedLocation]
+    SET [Description] = N'Updated constraint test fished location'
+    WHERE [FishedLocationId] = @FishedLocationId;
+
+    SELECT @UpdatedAt = [UpdatedAt]
+    FROM [dbo].[FishedLocation]
+    WHERE [FishedLocationId] = @FishedLocationId;
+
+    IF @CreatedAt <> (SELECT [CreatedAt] FROM [dbo].[FishedLocation] WHERE [FishedLocationId] = @FishedLocationId)
+        THROW 51009, 'CreatedAt changed after an update.', 1;
+
+    IF @UpdatedAt <= @InitialUpdatedAt
+        THROW 51010, 'UpdatedAt did not advance after an update.', 1;
 
     /* Foreign-key enforcement. */
     BEGIN TRY

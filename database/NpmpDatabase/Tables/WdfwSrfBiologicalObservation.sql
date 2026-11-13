@@ -1,6 +1,8 @@
 CREATE TABLE [dbo].[WdfwSrfBiologicalObservation]
 (
     [WdfwSrfBiologicalObservationId] INT IDENTITY(1,1) NOT NULL,
+    [CreatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_WdfwSrfBiologicalObservation_CreatedAt] DEFAULT (SYSUTCDATETIME()),
+    [UpdatedAt] DATETIME2(7) NOT NULL CONSTRAINT [DF_WdfwSrfBiologicalObservation_UpdatedAt] DEFAULT (SYSUTCDATETIME()),
     [SpeciesId] INT NOT NULL,
     [ForkLengthMillimeters] INT NULL,
     [PitTagCode] NVARCHAR(255) NULL,
@@ -27,3 +29,16 @@ CREATE INDEX [IX_WdfwSrfBiologicalObservation_SexId] ON [dbo].[WdfwSrfBiological
 GO
 CREATE INDEX [IX_WdfwSrfBiologicalObservation_WdfwSrfTripId] ON [dbo].[WdfwSrfBiologicalObservation] ([WdfwSrfTripId]);
 GO
+CREATE TRIGGER [dbo].[TR_WdfwSrfBiologicalObservation_SetUpdatedAt]
+ON [dbo].[WdfwSrfBiologicalObservation]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF TRIGGER_NESTLEVEL() > 1 RETURN;
+
+    UPDATE [dbo].[WdfwSrfBiologicalObservation]
+    SET [UpdatedAt] = SYSUTCDATETIME()
+    FROM [dbo].[WdfwSrfBiologicalObservation] AS [Target]
+    INNER JOIN [inserted] AS [Source] ON [Source].[WdfwSrfBiologicalObservationId] = [Target].[WdfwSrfBiologicalObservationId];
+END;
